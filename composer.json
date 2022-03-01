@@ -11,7 +11,6 @@
   ],
   "require": {
     "php": ">=5.4",
-    "ssh2": ">= 0.9.0",
     "ext-ssh2": "*"
   },
   "autoload": {
