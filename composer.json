@@ -1,0 +1,18 @@
+{
+  "name": "manjestik/sshclient",
+  "description": "OOP SSH Client",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Victor Abrosimov",
+      "email": "manjestik1@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4",
+    "ext-ssh2": "*"
+  },
+  "autoload": {
+    "classmap": ["src"]
+  }
+}
