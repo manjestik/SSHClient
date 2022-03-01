@@ -2,6 +2,7 @@
   "name": "manjestik/sshclient",
   "description": "OOP SSH Client",
   "license": "proprietary",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Victor Abrosimov",
@@ -10,6 +11,7 @@
   ],
   "require": {
     "php": ">=5.4",
+    "ssh2": ">= 0.9.0",
     "ext-ssh2": "*"
   },
   "autoload": {
