@@ -99,10 +99,10 @@ class SSHService
      * @param int $width Ширина виртуального терминала.
      * @param int $height Высота виртуального терминала.
      * @param int $widthHeightType Должен быть SSH2_TERM_UNIT_CHARS или SSH2_TERM_UNIT_PIXELS.
-     * @return array
+     * @return string
      * @throws SSHException
      */
-    public function sshExec(string $command, string $pty = "", array $env = [], int $width = 80, int $height = 25, int $widthHeightType = SSH2_TERM_UNIT_CHARS): array
+    public function sshExec(string $command, string $pty = "", array $env = [], int $width = 80, int $height = 25, int $widthHeightType = SSH2_TERM_UNIT_CHARS): string
     {
         $stream = ssh2_exec($this->session, $command, $pty, $env, $width, $height, $widthHeightType);
         if ($stream === false) {
@@ -112,19 +112,29 @@ class SSHService
         return $this->getResponseExecuteCommand($stream);
     }
 
-    private function getResponseExecuteCommand($stream): array
+    /**
+     * @param resource $stream
+     * @return string
+     * @throws SSHException
+     */
+    private function getResponseExecuteCommand($stream): string
     {
-        $errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
-
-        stream_set_blocking($errorStream, true);
         stream_set_blocking($stream, true);
 
-        $response = ['response' => stream_get_contents($stream), 'error' => stream_get_contents($errorStream)];
+        $streamOut = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+        $streamOutError = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
 
-        fclose($errorStream);
-        fclose($stream);
+        $streamOutMessage = stream_get_contents($streamOut);
+        $streamOutErrorMessage = stream_get_contents($streamOutError);
 
-        return $response;
+        fclose($streamOut);
+        fclose($streamOutError);
+
+        if (!empty($streamOutErrorMessage)){
+            throw new SSHException($streamOutErrorMessage);
+        }
+
+        return $streamOutMessage;
     }
 
     /**
