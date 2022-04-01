@@ -2,7 +2,7 @@
   "name": "manjestik/sshclient",
   "description": "OOP SSH Client",
   "license": "proprietary",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [
     {
       "name": "Victor Abrosimov",
