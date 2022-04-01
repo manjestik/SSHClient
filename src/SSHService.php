@@ -227,7 +227,7 @@ class SSHService
      */
     public function sshSftpUnlink(string $filename): void
     {
-        if (ssh2_sftp_rmdir($this->getSftp(), $filename) === false) {
+        if (ssh2_sftp_unlink($this->getSftp(), $filename) === false) {
             throw new SSHException('Failed to remove file');
         }
     }
