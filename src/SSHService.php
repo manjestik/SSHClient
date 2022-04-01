@@ -38,7 +38,8 @@ class SSHService
      */
     private function getSftp($sftp = null)
     {
-        if (($sftp ?? $this->sftp) === false) {
+        $sftp = $sftp ?? $this->sftp;
+        if (!is_resource($sftp)) {
             throw new SSHException('Failed to initialize the SFTP subsystem');
         }
 
@@ -130,7 +131,7 @@ class SSHService
         fclose($streamOut);
         fclose($streamOutError);
 
-        if (!empty($streamOutErrorMessage)){
+        if (!empty($streamOutErrorMessage)) {
             throw new SSHException($streamOutErrorMessage);
         }
 
