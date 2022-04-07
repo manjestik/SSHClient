@@ -100,17 +100,23 @@ class SSHService
      * @param int $width Ширина виртуального терминала.
      * @param int $height Высота виртуального терминала.
      * @param int $widthHeightType Должен быть SSH2_TERM_UNIT_CHARS или SSH2_TERM_UNIT_PIXELS.
-     * @return string
+     * @param bool $needResponse
+     * @return string|void
      * @throws SSHException
      */
-    public function sshExec(string $command, string $pty = "", array $env = [], int $width = 80, int $height = 25, int $widthHeightType = SSH2_TERM_UNIT_CHARS): string
+    public function sshExec(string $command, string $pty = "", array $env = [], int $width = 80, int $height = 25, int $widthHeightType = SSH2_TERM_UNIT_CHARS, bool $needResponse = true)
     {
+        $command .= ';echo "[return_code:$?]"';
         $stream = ssh2_exec($this->session, $command, $pty, $env, $width, $height, $widthHeightType);
         if ($stream === false) {
             throw new SSHException('Failed to execute command on remote server');
         }
 
-        return $this->getResponseExecuteCommand($stream);
+        if ($needResponse) {
+            return $this->getResponseExecuteCommand($stream);
+        } else {
+            return;
+        }
     }
 
     /**
@@ -133,6 +139,15 @@ class SSHService
 
         if (!empty($streamOutErrorMessage)) {
             throw new SSHException($streamOutErrorMessage);
+        }
+
+        preg_match('/\[return_code:(.*?)\]/', $streamOutMessage, $match);
+        if (is_array($match) && count($match) === 2) {
+            $returnCode = $match[1];
+            $streamOutMessage = str_replace("[return_code:$returnCode]\r\n", '', $streamOutMessage);
+            if ($returnCode > 0) {
+                throw new SSHException($streamOutMessage);
+            }
         }
 
         return $streamOutMessage;
