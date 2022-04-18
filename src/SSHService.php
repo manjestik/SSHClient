@@ -246,4 +246,14 @@ class SSHService
             throw new SSHException('Failed to remove file');
         }
     }
+
+    /**
+     * Выполнение команды без ожидания ответа
+     * @param string $command
+     * @return void
+     */
+    public function fRun(string $command): void
+    {
+        ssh2_exec($this->session, $command);
+    }
 }
